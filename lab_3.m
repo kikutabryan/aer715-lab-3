@@ -39,9 +39,18 @@ fprintf("The force required for steady level flight is: %d [N]\n", F_t);
 %% Question 3
 K_f = 0.140;
 V_sum = F_t / K_f;
-fprintf("The voltage required to keep the helicopter at steady level is: %d [V]", V_sum)
+fprintf("The voltage required to keep the helicopter at steady level is: %d [V]\n", V_sum)
 
 %% Question 4
+% The transfer function from equation 2 is found by subsituting F_t =
+% K_f*V_sum into it, then taking the Laplace transforms of both sides.
+% Afterwards, T_g is ignored, and E(s)/V_sum(s) is solved for yielding:
+% G_elev(S) = E(s)/V_sum(s) = (L_a * K_f) / (J_e * s^2)
+numerator = L_a * K_f;
+denominator = [J_e, 0, 0];  % Represents J_e * s^2
+G2_elev1 = tf(numerator, denominator);
+disp("The transfer function G_elev is:");
+G2_elev1
 
 %% Question 5
 
