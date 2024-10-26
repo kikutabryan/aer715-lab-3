@@ -49,10 +49,65 @@ fprintf("The voltage required to keep the helicopter at steady level is: %d [V]\
 numerator = L_a * K_f;
 denominator = [J_e, 0, 0];  % Represents J_e * s^2
 G2_elev1 = tf(numerator, denominator);
-disp("The transfer function G_elev is:");
+disp("The transfer function G2_elev1 is:");
 G2_elev1
 
 %% Question 5
+% Load first set of elevation data
+elevation_data_1 = load("elevationData1.mat").elev1;
+time = elevation_data_1(1, 121:2500);  % Select to t=24.99 [s]
+volts1 = elevation_data_1(2, 121:2500);
+elev1 = elevation_data_1(3, 121:2500);
+
+% Load second set of elevation data
+elevation_data_2 = load("elevationData2.mat").elev2;
+volts2 = elevation_data_2(2, 121:2500);
+elev2 = elevation_data_2(3, 121:2500);
+
+% Load third set of elevation data
+elevation_data_3 = load("elevationData3.mat").elev3;
+volts3 = elevation_data_3(2, 121:2500);
+elev3 = elevation_data_3(3, 121:2500);
+
+% Create plot
+plot(time, elev1, "-", time, elev2, "-", time, elev3, "-");
+xlabel("Time (s)");
+ylabel("Elevation");
+title("Elevation vs Time");
+legend("elev1", "elev2", "elev3");
+grid on;
+
+% Create iddata objects for each elevation dataset
+data_1 = iddata(elev1', volts1', 0.01);
+data_2 = iddata(elev2', volts2', 0.01);
+data_3 = iddata(elev3', volts3', 0.01);
+
+% Combine the iddata objects into one dataset
+combined_data = merge(data_1, data_2, data_3);
+
+% Use tfest to estimate a transfer function with 2 poles
+G_elev2 = tfest(combined_data, 2, 1); % 1 zero
+disp("The transfer function G2_elev2 is:");
+G_elev2
+
+% Use tfest to estimate a transfer function with 3 poles
+G_elev3 = tfest(combined_data, 3, 1); % 1 zero
+disp("The transfer function G2_elev3 is:");
+G_elev3
+
+% Extract numerator and denominator polynomials for G_elev2
+[num2, den2] = tfdata(G_elev2, 'v'); % 'v' for vector format
+disp('G_elev2 Numerator:');
+disp(num2);
+disp('G_elev2 Denominator:');
+disp(den2);
+
+% Extract numerator and denominator polynomials for G_elev3
+[num3, den3] = tfdata(G_elev3, 'v'); % 'v' for vector format
+disp('G_elev3 Numerator:');
+disp(num3);
+disp('G_elev3 Denominator:');
+disp(den3);
 
 %% Question 6
 
